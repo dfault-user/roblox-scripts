@@ -26,44 +26,52 @@ SOFTWARE.
 
 ]]--
 
--- def players
+-- define players, dynamically require f3x, and product info
 local players = game:GetService("Players")
-
--- retrieve current f3x version
 local f3x = require(580330877)(); 
-
--- begin initialization
-
 local product = "f3xdist"
+local suppress = true -- suppress warnings bool
 local version = {
-	-- version information
-	1,
-	2,
-	4,
-	-- end version information
+	1, 
+	3,
+	0,
+	--[[
+	
+	Last changelog:
+		Updated f3xdist to 1.3.0
+			* Changed comment formatting
+			+ Split the handling of output
+			
+	]]--
 }
 
+-- define datatype
 type data = {
 	gid:number;
 	minrank:number;
 }
 
--- config with new layout (1.2.0)
+-- define groups table
 local groups:{} = {
 	BeneathEbott = {
 		gid = 2737830;
 		minrank = 150;
 	} :: data
+--[[
+	NameThisWhateverYouWantButItCantHaveNumbersInIt = {
+		gid = GroupId; (https://www.roblox.com/groups/7817222/MEMPHRAME)
+		minrank = RankId; (ask the group's owner if you do not have rank management permissions, this is where you find rank ids)
+	}
+]]--	^ this is an example, uncomment if necessary
 }
 
 local users:{} = {
-	18875912;
-	39787900;
+	18875912; -- Control22
 }
 
--- util
+-- utility functions, distribution and output formatting
 local util = { 
-
+	
 	distribute = function(t: Tool,p: Player)
 		local nt = t:Clone()
 		nt.Parent = p:WaitForChild('Backpack')
@@ -73,13 +81,17 @@ local util = {
 	end,
 
 	output = function(call:string,...)
-		if call == 'warn' then warn(`[{product}:warn] {...}`) else
-			print(`[{product}:{call}] {...}`)	
-		end
+		print(`[{product}:{call}] {...}`)	
+	end,
+
+	warn = function(...)
+		if not suppress then
+		warn(`[{product}:warn] {...}`)
+		end	
 	end,
 }
 
--- auth
+-- authentication function
 local authenticate:(Player) -> boolean = function(plr)
 	local allowed = false;
 
@@ -90,13 +102,13 @@ local authenticate:(Player) -> boolean = function(plr)
 	if table.find(users,plr.UserId) and not allowed then 
 		allowed = true 
 	elseif allowed then 
-		util.output('warn',`Player already authenticated by group association, redundant entry in player table: {plr.Name}:{tostring(plr.UserId)}`)
+		util.warn(`Player already authenticated by group association, redundant entry in player table: {plr.Name}:{tostring(plr.UserId)}`)
 	end
 
 	return allowed
 end
 
--- present arms
+-- output version and prepare f3x
 util.output('ver', `{table.concat(version,'.')}`)
 
 local ast = Instance.new("Folder",game:GetService("ServerStorage"));ast.Name="f3xdist"

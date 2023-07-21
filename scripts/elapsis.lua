@@ -28,17 +28,14 @@ SOFTWARE.
 
 -- setup
 local p = game:GetService("Players")
-
--- util
-
 local product = "elapsis"
 local ver = {
 	1;
 	0;
-	0;
+	1;
 }
 
-
+-- util
 local util = {
 	output = function(call:string,...)
 		if call == 'warn' then warn(`[{product}:warn] {...}`) else
