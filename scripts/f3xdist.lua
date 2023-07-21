@@ -34,13 +34,12 @@ local suppress = true -- suppress warnings bool
 local version = {
 	1, 
 	3,
-	0,
+	1,
 	--[[
 	
 	Last changelog:
-		Updated f3xdist to 1.3.0
-			* Changed comment formatting
-			+ Split the handling of output
+		Updated f3xdist to 1.3.1
+			* Changed code variables for compactness reasons
 			
 	]]--
 }
@@ -95,8 +94,8 @@ local util = {
 local authenticate:(Player) -> boolean = function(plr)
 	local allowed = false;
 
-	for _,curgr:data in groups do
-		local s,e = pcall(function() allowed = plr:GetRankInGroup(curgr.gid) >= curgr.minrank end)
+	for _,gr:data in groups do
+		local s,e = pcall(function() allowed = plr:GetRankInGroup(gr.gid) >= gr.minrank end)
 	end
 
 	if table.find(users,plr.UserId) and not allowed then 
