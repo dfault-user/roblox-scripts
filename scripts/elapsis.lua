@@ -28,14 +28,17 @@ SOFTWARE.
 
 -- setup
 local p = game:GetService("Players")
+
+-- util
+
 local product = "elapsis"
 local ver = {
 	1;
 	0;
-	1;
+	2;
 }
 
--- util
+
 local util = {
 	output = function(call:string,...)
 		if call == 'warn' then warn(`[{product}:warn] {...}`) else
@@ -47,21 +50,23 @@ local util = {
 -- main
 local function lbs(pl: Player)
 	
+	util.output("attach",`Attaching to {pl.Name}`)
+	
 	local ls = Instance.new("Folder",pl)
 	ls.Name = "leaderstats"
-	
+
 	local s = Instance.new("IntValue",ls)
 	s.Name = "Seconds"
 	s.Value = 0
-	
+
 	local function loop()
 		while wait(1) do
 			s.Value+=1
 		end
 	end
-	
+
 	spawn(loop)
-	
+
 end
 
 -- strap

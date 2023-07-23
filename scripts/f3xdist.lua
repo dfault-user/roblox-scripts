@@ -29,17 +29,18 @@ SOFTWARE.
 -- define players, dynamically require f3x, and product info
 local players = game:GetService("Players")
 local f3x = require(580330877)(); 
+
 local product = "f3xdist"
-local suppress = true -- suppress warnings bool
+local suppress = false -- suppress warnings bool
 local version = {
 	1, 
-	3,
-	1,
+	4,
+	0,
 	--[[
 	
 	Last changelog:
-		Updated f3xdist to 1.3.1
-			* Changed code variables for compactness reasons
+		Updated f3xdist to 1.4.0
+			+ Reworked authentication
 			
 	]]--
 }
@@ -52,9 +53,9 @@ type data = {
 
 -- define groups table
 local groups:{} = {
-	BeneathEbott = {
-		gid = 2737830;
-		minrank = 150;
+	MEMPHRAME = {
+		gid = 7817222;
+		minrank = 0;
 	} :: data
 --[[
 	NameThisWhateverYouWantButItCantHaveNumbersInIt = {
@@ -66,11 +67,12 @@ local groups:{} = {
 
 local users:{} = {
 	18875912; -- Control22
+	39787900;
 }
 
 -- utility functions, distribution and output formatting
 local util = { 
-	
+
 	distribute = function(t: Tool,p: Player)
 		local nt = t:Clone()
 		nt.Parent = p:WaitForChild('Backpack')
@@ -85,7 +87,7 @@ local util = {
 
 	warn = function(...)
 		if not suppress then
-		warn(`[{product}:warn] {...}`)
+			warn(`[{product}:warn] {...}`)
 		end	
 	end,
 }
@@ -95,13 +97,17 @@ local authenticate:(Player) -> boolean = function(plr)
 	local allowed = false;
 
 	for _,gr:data in groups do
-		local s,e = pcall(function() allowed = plr:GetRankInGroup(gr.gid) >= gr.minrank end)
+		local s,e = pcall(function() 
+			allowed = plr:GetRankInGroup(gr.gid) >= gr.minrank 
+			util.output("auth",`Authenticated {plr.Name} by group {gr.gid}`)
+		end)
 	end
-
+	
 	if table.find(users,plr.UserId) and not allowed then 
-		allowed = true 
-	elseif allowed then 
-		util.warn(`Player already authenticated by group association, redundant entry in player table: {plr.Name}:{tostring(plr.UserId)}`)
+		allowed = true 	
+		util.output("auth",`Authenticated {plr.Name} by UserId`)
+	elseif table.find(users,plr.UserId) and allowed then
+		util.warn(`UserId already authenticated as part of group: {plr.Name .. " (" .. plr.UserId .. ")"}`)
 	end
 
 	return allowed
