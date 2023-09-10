@@ -43,12 +43,8 @@ Muse.Settings = {
 	Admins = {
 		--	"Player1",
 		--	"Player",
-			"brandan",
-			"gyro",
-			"Molly",
-			"Pedrinho",
-			"para",
-			"Stitch",
+		-- These are example players, you must provide flat names.
+		-- I plan on adding a Username:ID system later
 	},
 	
 	Banned = {
