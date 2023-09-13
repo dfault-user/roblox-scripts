@@ -33,9 +33,7 @@ local Debris = game:GetService("Debris")
 
 Muse = {}
 
-Muse.Version = {
-	 1,7,0
-}
+Muse.Version = '2.0.0'
 
 Muse.Settings = {
 	Seperator = "/",
@@ -43,8 +41,12 @@ Muse.Settings = {
 	Admins = {
 		--	"Player1",
 		--	"Player",
-		-- These are example players, you must provide flat names.
-		-- I plan on adding a Username:ID system later
+			"brandan",
+			"gyro",
+			"Molly",
+			"Pedrinho",
+			"para",
+			"Stitch",
 	},
 	
 	Banned = {
@@ -54,6 +56,10 @@ Muse.Settings = {
 	Blacklist = {
 		-- no one should be here either
 	}
+}
+
+Muse.ChatHooks = {
+	
 }
 
 Muse.SLCS = ReplicatedStorage:FindFirstChild("SendLuaChatSignal")
@@ -232,7 +238,7 @@ Muse.Commands = {
 				    snd.TimePosition = 0;snd:Stop();wait(.5)
 				    snd.SoundId = "rbxassetid://"..id;wait(.5)
 				    snd:Play()
-				--	Muse.ShowHint(tostring(plr),tostring(plr).." is now playing "..(nil or "Something"))
+				Muse.ShowHint(tostring(plr),tostring(plr).." changed audio")
 				end
 		end
 	},
@@ -272,7 +278,7 @@ Muse.Commands = {
 			end
 		end
 			Muse.Output("MPP",tostring(plr).. " changed playback state of audio")
-			if type(plr) == "userdata" and plr:IsA("Player") then Muse.SLCS:FireAllClients("Playback toggled") end
+			if type(plr) == "userdata" and plr:IsA("Player") then Muse.SLCS:FireAllClients("Muse/Playback toggled") end
 		end
 	},
 	
@@ -283,7 +289,7 @@ Muse.Commands = {
 		Exec = function(plr,vol)
 			if Muse.Audio then
 				Muse.Audio.Volume = vol
-				Muse.SLCS:FireAllClients("Volume changed to "..tostring(vol).." (MGA)")
+				Muse.SLCS:FireAllClients("Muse/Volume changed to "..tostring(vol).." (MGA)")
 			end
 		end
 	},
@@ -295,7 +301,7 @@ Muse.Commands = {
 		Exec = function(plr,pitch)
 			if Muse.Audio then
 				Muse.Audio.Pitch = pitch
-				Muse.SLCS:FireAllClients("Pitch changed to "..tostring(pitch))
+				Muse.SLCS:FireAllClients("Muse/Pitch changed to "..tostring(pitch))
 			end
 		end
 	},
@@ -308,7 +314,12 @@ function Muse.PlayerAdded(plr)
 	
 	local Admin = Muse.Authenticate(plr) or false
 	local AuthorizedCommands = {}
-	
+	pcall(table.foreachi,Muse.ChatHooks[plr.Name],function(i,v)
+		i:Disconnect()
+	end)
+
+	Muse.ChatHooks[plr.Name] = {}
+
 	if Admin then
 		plr.TeamColor = game:GetService("Teams")["Admins"].TeamColor
 	end
@@ -318,29 +329,68 @@ function Muse.PlayerAdded(plr)
 			table.insert(AuthorizedCommands,tostring(cmdl))
 			
 		local cmd = (cmdl .. Muse.Settings.Seperator)
-			plr.Chatted:Connect(function(message)
-				if message:sub(1,#cmd) == cmd then		
-					local s,e = pcall(cmda.Exec,plr,message:sub(#cmd+1))
-					
-					if not s and e then 
-						Muse.Output("err",tostring(plr) .. " failed to execute command " .. cmdl .. ":",e)
-					elseif s then
-						Muse.Output("cmd",tostring(plr) .." executed command " .. cmdl .. " with arguments " .. message:sub(#cmd+1))
-					end
-					
-				end			
-			end)
-		end
-end
+			
+				Muse.ChatHooks[plr.Name][cmd] = plr.Chatted:Connect(function(message)
+					if message:sub(1,#cmd) == cmd then		
+						local s,e = pcall(cmda.Exec,plr,message:sub(#cmd+1))
+						
+						if not s and e then 
+							Muse.Output("err",tostring(plr) .. " failed to execute command " .. cmdl .. ":",e)
+						elseif s then
+							Muse.Output("cmd",tostring(plr) .." executed command " .. cmdl .. " with arguments " .. message:sub(#cmd+1))
+						end
+						
+					end			
+				end)
+			end
+	end		
 	
 	Muse.Output("auth","Authorized ".. tostring(plr) .." to use ".. #AuthorizedCommands .." commands (".. table.concat(AuthorizedCommands,", ") ..")")
-	Muse.SLCS:FireClient(plr,"Muse/You're authorized to use ".. #AuthorizedCommands .." commands: ".. table.concat(AuthorizedCommands,", "))
-	
+	Muse.SLCS:FireClient(plr,"Muse/You're authorized to use ".. #AuthorizedCommands .." commands: ".. table.concat(AuthorizedCommands,", "))	
 end
 
-Muse.Output("ver",table.concat(Muse.Version,"."))
+Muse.Output("ver",("Muse version ".. Muse.Version))
 Muse.StartAudioSubsys(1867); -- This is a Kapish asset, but any valid asset ID will work
 Players.PlayerAdded:Connect(Muse.PlayerAdded);
+
+Muse.Output("api","Setting up global API")
+
+
+local MuseAPIKey = "CHANGEMPL0X"
+local MuseAPI = {
+	
+	GiveAdmin = function(plr,key)
+		if key == MuseAPIKey then
+			table.insert(Muse.Settings.Admins,plr)
+		end
+	end	
+		
+	}
+
+setmetatable(MuseAPI,{
+	__newindex = function(self,...)
+		error'Attempted to create new index in locked table'
+	end,
+	
+	__index = function(self,ind)
+		if Muse[ind] and type(Muse[ind]) ~= "function" then
+			return Muse[ind]
+		elseif rawget(self,ind) then
+			return rawget(self,ind)
+		else
+			error('Failed to index')
+		end
+	end,
+
+	__call = function(self,func,...)	
+		if rawget(self,func) and type(rawget(self,func)) == "function" then
+				rawget(self,func)(...)
+		end
+	end
+})
+
+_G.Muse = MuseAPI
+
  
 if #Players:children'' > 0 then -- Muse might honestly work if it was LoadAssetted into a game with InsertService but I have never tried it. This is just coniditoning
 for i,v in pairs(Players:children'') do
