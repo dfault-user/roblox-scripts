@@ -93,7 +93,7 @@ local util = {
 }
 
 -- authentication function
-local authenticate:(Player) -> boolean = function(plr)
+local function authenticate(plr: Player): boolean
 	local allowed = false;
 
 	for _,gr:data in groups do
@@ -102,7 +102,7 @@ local authenticate:(Player) -> boolean = function(plr)
 			util.output("auth",`Authenticated {plr.Name} by group {gr.gid}`)
 		end)
 	end
-	
+
 	if table.find(users,plr.UserId) and not allowed then 
 		allowed = true 	
 		util.output("auth",`Authenticated {plr.Name} by UserId`)
