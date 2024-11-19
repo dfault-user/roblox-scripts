@@ -32,7 +32,7 @@ local Debris = game:GetService("Debris")
 
 Muse = {}
 
-Muse.Version = '2.0.0'
+Muse.Version = '2.0.1'
 
 Muse.Settings = {
 	Seperator = "/",
