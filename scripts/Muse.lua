@@ -60,19 +60,20 @@ Muse.SLCS = ReplicatedStorage:FindFirstChild("SendLuaChatSignal")
 --[[
 
 	SLCS is a client RemoteEvent, parented to ReplicatedStorage. This remote takes a string like "Muse/bla" and outputs it to the Roblox Lua Chat (pre-2022 chat) as "[Muse] bla", using a string.split polyfill and SetCore.
-	
 	An example implementation would be as follows as a LocalScript: 
+	
 	local RS = game:GetService("ReplicatedStorage")
 	local RSM = RS:FindFirstChild"SendLuaChatSignal"
 	local Split = require(RS:WaitForChild"Split")
 
 	RSM.OnClientEvent:Connect(function(msg)
 		local splitmsg = Split(msg,"/")
+			local slcs_source, slcs_message = splitmsg[1], splitmsg[2]
 			game.StarterGui:SetCore("ChatMakeSystemMessage", {
 				Text=("["..splitmsg[1].."] "..splitmsg[2]);
 				Color=BrickColor.new(101).Color
 			})
-		print("Processed message of "..#splitmsg[2].." characters ("..splitmsg[1]..")")
+			print("Processed message of "..#slcsmessage.." characters ("..slcs_splitmsg[1]..")")
 	end)
 
 	This requires a ModuleScript that returns the following function from http://lua-users.org/wiki/SplitJoin , which is a good polyfill for string.split from newer versions of Roblox.
