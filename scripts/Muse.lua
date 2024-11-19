@@ -82,18 +82,26 @@ Muse.SLCS = ReplicatedStorage:FindFirstChild("SendLuaChatSignal")
 ]]--
 
 function Muse.Output(thread,output)
-	print("[Muse:"..tostring(thread).."] " .. output)
+	print(
+		string.format("[Muse:%s] %s",
+		tostring(thread),
+		output)
+	)
 end
 
 function Muse.ShowHint(plr,text)
 	local Hint = Instance.new("Hint",workspace)
-	Hint.Name = "Muse"..tostring(plr).."Hint"
-	Hint.Text=("[Muse] "..text);Debris:AddItem(Hint,3)
+	Hint.Name = string.format("Muse%sHint", tostring(plr))
+	Hint.Text = string.format("[Muse] %s", text)
+	Debris:AddItem(Hint, 3)
 end
 
 function Muse.StartAudioSubsys(id)
 	local soundid
-	if id~=nil then soundid="rbxassetid://"..tostring(id) end
+	if id ~= nil then
+		soundid = string.format("rbxassetid://%s", tostring(id))
+	end
+
 		Muse.Output("audio","Preparing Muse Global Audio")
 		local MuseAudio = Instance.new("Sound",workspace)
 		MuseAudio.Name = "MuseAudio"
@@ -103,7 +111,7 @@ function Muse.StartAudioSubsys(id)
 		
 		MuseAudio.Changed:Connect(function(prop)
 			if prop == "SoundId" then
-				Muse.ShowHint("Server","SoundId has been changed to "..tostring(MuseAudio.SoundId))
+				Muse.ShowHint("Server", string.format("SoundId has been changed to %s", tostring(MuseAudio.SoundId)))
 			end
 		end)
 	
@@ -142,12 +150,13 @@ function Muse.CheckBlacklist(plr)
 end
 
 function Muse.Boot(plr,reason)
-		Muse.Output("Boot",(tostring(plr)).." was removed from the server by Muse")
-		plr:Kick("Kicked by Muse "..(reason or "No reason provided"))
+	Muse.Output("Boot", string.format("%s was removed from the server by Muse", tostring(plr)))
+	plr:Kick(string.format("Kicked by Muse %s", reason or "No reason provided"))
 end
 
 function Muse.Ban(plr,reason)
-	table.insert(Muse.Settings.Banned,tostring(plr));Muse.Boot(plr,reason)
+	table.insert(Muse.Settings.Banned,tostring(plr))
+	Muse.Boot(plr,reason)
 end
 
 
@@ -158,7 +167,7 @@ Muse.Commands = {
 		Description = "Test command.. it does what you might think it does",
 		
 		Exec = function(plr,...)
-		Muse.Output("test",tostring(plr) .. " fired test comm with " .. (...) .. " as args (length: " ..(#...) .. ")")
+		Muse.Output("test", string.format("%s fired test comm with %s as args (length: %d)", tostring(plr), tostring(...), select("#", ...)))
 		end,
 	},
 	
@@ -167,7 +176,7 @@ Muse.Commands = {
 		Description = "Kicks a player",
 		
 		Exec = function(plr,victim)
-			local victobj = Players:FindFirstChild'victobj'
+			local victobj = Players:FindFirstChild(victim)
 			
 			if not victobj then 
 				error("No player") 
@@ -194,16 +203,15 @@ Muse.Commands = {
 		NonAdmin = true,
 		Description = "Sends description of command to calling player",
 		
-		Exec = function(plr,cmd)
+		Exec = function(plr, cmd)
 			if Muse.Commands[cmd] then
-				
-			Muse.SLCS:FireClient(plr,"Muse/"..(cmd ..": " ..Muse.Commands[cmd].Description))
+				Muse.SLCS:FireClient(plr, string.format("Muse/%s: %s", cmd, Muse.Commands[cmd].Description))
 			
 			if not Muse.Commands[cmd].NonAdmin and not Muse.Authenticate(plr) then
-				Muse.SLCS:FireClient(plr,"Muse/You don't have permission to run the above command.")
+					Muse.SLCS:FireClient(plr, "Muse/You don't have permission to run the above command.")
 			end
-			
-			else error'Command not found'
+			else
+				error("Command not found")
 			end
 		end
 	},
@@ -213,9 +221,9 @@ Muse.Commands = {
 		Description = "Sends list of authorized commands",
 		
 		Exec = function(plr)
-			wait(.25) -- intentional wait because it fires it too fast after chatted
-			for ind,cmd in pairs(Muse.Commands) do
-				Muse.SLCS:FireClient(plr,"Muse/"..(tostring(ind).. " ("..tostring(cmd.Description)..")"))
+			wait(0.25) -- intentional wait because it fires it too fast after chatted
+			for ind, cmd in pairs(Muse.Commands) do
+				Muse.SLCS:FireClient(plr, string.format("Muse/%s (%s)", tostring(ind), tostring(cmd.Description)))
 			end
 		end
 	},
