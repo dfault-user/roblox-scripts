@@ -1,4 +1,5 @@
 --[[
+
 	Muse, an extensible admin system by brandan/Control22/dfu
 	Made for Kapish 2016
 
@@ -62,19 +63,19 @@ Muse.SLCS = ReplicatedStorage:FindFirstChild("SendLuaChatSignal")
 	SLCS is a client RemoteEvent, parented to ReplicatedStorage. This remote takes a string like "Muse/bla" and outputs it to the Roblox Lua Chat (pre-2022 chat) as "[Muse] bla", using a string.split polyfill and SetCore.
 	An example implementation would be as follows as a LocalScript: 
 	
-	local RS = game:GetService("ReplicatedStorage")
-	local RSM = RS:FindFirstChild"SendLuaChatSignal"
-	local Split = require(RS:WaitForChild"Split")
+		local RS = game:GetService("ReplicatedStorage")
+		local RSM = RS:FindFirstChild"SendLuaChatSignal"
+		local Split = require(RS:WaitForChild"Split")
 
-	RSM.OnClientEvent:Connect(function(msg)
-		local splitmsg = Split(msg,"/")
+		RSM.OnClientEvent:Connect(function(msg)
+			local splitmsg = Split(msg,"/")
 			local slcs_source, slcs_message = splitmsg[1], splitmsg[2]
-			game.StarterGui:SetCore("ChatMakeSystemMessage", {
-				Text=("["..splitmsg[1].."] "..splitmsg[2]);
-				Color=BrickColor.new(101).Color
-			})
+				game.StarterGui:SetCore("ChatMakeSystemMessage", {
+					Text=("["..splitmsg[1].."] "..splitmsg[2]);
+					Color=BrickColor.new(101).Color
+				})
 			print("Processed message of "..#slcsmessage.." characters ("..slcs_splitmsg[1]..")")
-	end)
+		end)
 
 	This requires a ModuleScript that returns the following function from http://lua-users.org/wiki/SplitJoin , which is a good polyfill for string.split from newer versions of Roblox.
 	If you are attempting to run Muse on newer Roblox, and god save your soul if you are.. use string.split instead. It's better.
@@ -206,10 +207,10 @@ Muse.Commands = {
 		Exec = function(plr, cmd)
 			if Muse.Commands[cmd] then
 				Muse.SLCS:FireClient(plr, string.format("Muse/%s: %s", cmd, Muse.Commands[cmd].Description))
-			
-			if not Muse.Commands[cmd].NonAdmin and not Muse.Authenticate(plr) then
+				
+				if not Muse.Commands[cmd].NonAdmin and not Muse.Authenticate(plr) then
 					Muse.SLCS:FireClient(plr, "Muse/You don't have permission to run the above command.")
-			end
+				end
 			else
 				error("Command not found")
 			end
