@@ -40,12 +40,6 @@ Muse.Settings = {
 	Admins = {
 		--	"Player1",
 		--	"Player",
-			"brandan",
-			"gyro",
-			"Molly",
-			"Pedrinho",
-			"para",
-			"Stitch",
 	},
 	
 	Banned = {
