@@ -35,7 +35,7 @@ local product = "elapsis"
 local ver = {
 	1;
 	0;
-	2;
+	3;
 }
 
 
@@ -60,12 +60,12 @@ local function lbs(pl: Player)
 	s.Value = 0
 
 	local function loop()
-		while wait(1) do
+		while task.wait(1) do
 			s.Value+=1
 		end
 	end
 
-	spawn(loop)
+	task.spawn(loop)
 
 end
 

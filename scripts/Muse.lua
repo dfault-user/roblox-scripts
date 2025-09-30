@@ -1,13 +1,13 @@
 --[[
 
-	Muse, an extensible admin system by brandan/Control22/dfu
+	Muse, an extensible admin system by Clair
 	Made for Kapish 2016
 
 	MIT License
 
-	Copyright (c) 2023 Brandan C. Delafuente
+	Copyright (c) 2023 Clair C. Delafuente
 	
-	Permission is hereby granted, f`ree of charge, to any person obtaining a copy
+	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -33,7 +33,7 @@ local Debris = game:GetService("Debris")
 
 Muse = {}
 
-Muse.Version = '2.0.1'
+Muse.Version = '2.0.2'
 
 Muse.Settings = {
 	Seperator = "/",
@@ -124,18 +124,17 @@ end
 
 function Muse.PlayerExistsInTable(plr,tbl)
 	if not plr:IsA("Player") then error"Not a player" end
-	
-	local exists = false
+
 	
 	table.foreach(tbl,function(k,v)
 		
 			if v == plr.Name then
-		exists = true
+				return true
 			end
 			
 	end)
 	
-	return exists
+	return false 
 end
 
 function Muse.Authenticate(plr)

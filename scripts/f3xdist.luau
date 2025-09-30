@@ -35,12 +35,12 @@ local suppress = false -- suppress warnings bool
 local version = {
 	1, 
 	4,
-	0,
+	1,
 	--[[
 	
 	Last changelog:
-		Updated f3xdist to 1.4.0
-			+ Reworked authentication
+		Updated f3xdist to 1.4.1
+			* Edited license
 			
 	]]--
 }
